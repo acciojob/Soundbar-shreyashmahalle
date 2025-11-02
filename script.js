@@ -1,30 +1,39 @@
  const sounds = ['applause','boo','gasp','tada','victory','wrong'];
-    const audioMap = {};
 
-    // Preload the audio
-    sounds.forEach(sound => {
-      const audio = new Audio(`sounds/${sound}.mp3`);
-      audioMap[sound] = audio;
+  // Create <audio> elements and keep them in the DOM
+  const audioContainer = document.getElementById('audios');
+  const audioMap = {};
+  sounds.forEach(name => {
+    const el = document.createElement('audio');
+    el.id = name;
+    el.preload = 'auto';
+    el.src = `sounds/${name}.mp3`;
+    audioContainer.appendChild(el);
+    audioMap[name] = el;
+  });
+
+  function stopAll() {
+    sounds.forEach(n => {
+      const a = audioMap[n];
+      a.pause();
+      a.currentTime = 0;
     });
+  }
 
-    // Handle play and stop
-    document.getElementById('buttons').addEventListener('click', e => {
-      if (e.target.classList.contains('btn')) {
-        const sound = e.target.dataset.sound;
-        stopAll();
-        if (sound) {
-          audioMap[sound].currentTime = 0;
-          audioMap[sound].play();
-        }
-      }
-    });
+  // Delegate clicks from the buttons container
+  document.getElementById('buttons').addEventListener('click', (e) => {
+    if (!e.target.classList.contains('btn')) return;
 
-    function stopAll() {
-      sounds.forEach(s => {
-        audioMap[s].pause();
-        audioMap[s].currentTime = 0;
-      });
+    if (e.target.classList.contains('stop')) {
+      stopAll();
+      return;
     }
 
-    // Stop button
-    document.querySelector('.stop').addEventListener('click', stopAll);
+    const sound = e.target.getAttribute('data-sound');
+    if (!sound) return;
+
+    stopAll();
+    const a = audioMap[sound];
+    a.currentTime = 0;
+    a.play(); // now a real <audio> exists in DOM -> Cypress can detect it
+  });
