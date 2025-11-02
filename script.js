@@ -1,46 +1,30 @@
-//your JS code here. If required.
-// Use the required sound names (files are expected in ./sounds/)
-const sounds = ['applause', 'boo', 'gasp', 'tada', 'victory', 'wrong'];
+ const sounds = ['applause','boo','gasp','tada','victory','wrong'];
+    const audioMap = {};
 
-const buttons = document.getElementById('buttons');
+    // Preload the audio
+    sounds.forEach(sound => {
+      const audio = new Audio(`sounds/${sound}.mp3`);
+      audioMap[sound] = audio;
+    });
 
-// Build a play button for each sound
-sounds.forEach((sound) => {
-  // hidden audio element
-  const audio = document.createElement('audio');
-  audio.id = sound;
-  audio.src = ./sounds/${sound}.mp3;
-  audio.preload = 'auto';
-  document.body.appendChild(audio);
+    // Handle play and stop
+    document.getElementById('buttons').addEventListener('click', e => {
+      if (e.target.classList.contains('btn')) {
+        const sound = e.target.dataset.sound;
+        stopAll();
+        if (sound) {
+          audioMap[sound].currentTime = 0;
+          audioMap[sound].play();
+        }
+      }
+    });
 
-  // visible button
-  const btn = document.createElement('button');
-  btn.className = 'btn';
-  btn.textContent = sound;
+    function stopAll() {
+      sounds.forEach(s => {
+        audioMap[s].pause();
+        audioMap[s].currentTime = 0;
+      });
+    }
 
-  btn.addEventListener('click', () => {
-    stopSounds();
-    const el = document.getElementById(sound);
-    el.currentTime = 0;
-    const p = el.play();    
-  });
-
-  buttons.appendChild(btn);
-});
-
-// Stop button (DO NOT give it .btn so tests count 6 .btn only)
-const stopBtn = document.createElement('button');
-stopBtn.className = 'stop';
-stopBtn.textContent = 'stop';
-stopBtn.addEventListener('click', stopSounds);
-buttons.appendChild(stopBtn);
-
-// Pause & reset all
-function stopSounds() {
-  sounds.forEach((sound) => {
-    const el = document.getElementById(sound);
-    if (!el) return;
-    el.pause();
-    el.currentTime = 0;
-  });
-}
+    // Stop button
+    document.querySelector('.stop').addEventListener('click', stopAll);
